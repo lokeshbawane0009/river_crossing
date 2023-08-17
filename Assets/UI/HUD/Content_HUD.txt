@@ -1,0 +1,3 @@
+HUD
+--------------
+Moves text : stroke : 000000 / alpha : 50%
