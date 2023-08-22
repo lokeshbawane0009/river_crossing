@@ -1,4 +1,4 @@
-using System.Collections;
+using EasyTransition;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,6 +7,8 @@ public class LevelManager : MonoBehaviour
 {
     private int level;
     public List<GameObject> levels;
+    public TransitionSettings transitionSettings;
+    public float delay;
 
     public int Level
     {
@@ -14,19 +16,28 @@ public class LevelManager : MonoBehaviour
         set
         {
             level = value;
-            for (int i = 0; i < levels.Count; i++)
-            {
-                if (i == level)
-                    levels[i].SetActive(true);
-                else
-                    levels[i].SetActive(false);
-            }
+            TransitionLevel(level);
         }
     }
 
-    private void Awake()
+    public void TransitionLevel(int level)
     {
-        Level = PlayerPrefs.GetInt("RC_level", 0);
+        TransitionManager.Instance().onTransitionCutPointReached += SetCorrectLevelData;
+        TransitionManager.Instance().Transition(transitionSettings, delay);
+    }
+
+    public void SetCorrectLevelData()
+    {
+        UIManager.Instance.SetLevelTxt(Level);
+        for (int i = 0; i < levels.Count; i++)
+        {
+            if (i == level)
+                levels[i].SetActive(true);
+            else
+                levels[i].SetActive(false);
+        }
+
+        TransitionManager.Instance().onTransitionCutPointReached -= SetCorrectLevelData;
     }
 
     public void RestartLevel()

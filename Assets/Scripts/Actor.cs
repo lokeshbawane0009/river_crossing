@@ -1,4 +1,3 @@
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -9,11 +8,13 @@ public class Actor : MonoBehaviour
     public bool canSteer;
     public int cost;
     [SerializeField] bool onRaft;
-    [SerializeField] bool onLeft;
-    [HideInInspector] public Vector3 originalPos;
+    public bool SetOnLeft=true;
+    bool onLeft;
+    public Vector3 originalPos;
     [HideInInspector] public Transform originalParent;
     new Collider collider;
     public UnityEvent failEvent;
+    public UnityEvent panicEvent;
 
     public bool OnRaft
     {
@@ -51,10 +52,13 @@ public class Actor : MonoBehaviour
 
     private void Start()
     {
-        originalPos = transform.position;
+        //If on left we can set the position , otherwise use the position set in inspector
+        if(SetOnLeft)
+            originalPos = transform.position;
+        
         originalParent = transform.parent;
         collider = GetComponent<Collider>();
-        OnLeft = true;
+        OnLeft = SetOnLeft;
     }
 
     public void EnableCollider()
@@ -78,10 +82,10 @@ public class Actor : MonoBehaviour
 
         OnRaft = !OnRaft;
 
-        if (!DOTween.IsTweening(transform.GetInstanceID()))
-            transform.DOPunchScale(Vector3.one * 1.02f, 0.15f, 1, 0)
-                .SetEase(Ease.InOutBack)
-                .OnComplete(() => transform.localScale = Vector3.one)
-                .SetId(transform.GetInstanceID());
+        //if (!DOTween.IsTweening(transform.GetInstanceID()))
+        //    transform.DOPunchScale(Vector3.one * 1.02f, 0.15f, 1, 0)
+        //        .SetEase(Ease.InOutBack)
+        //        .OnComplete(() => transform.localScale = Vector3.one)
+        //        .SetId(transform.GetInstanceID());
     }
 }

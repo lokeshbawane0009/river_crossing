@@ -8,6 +8,7 @@ public class GameplayManager : MonoBehaviour
 
     public Vector3 raftLeftPos;
     public Vector3 raftRightPos;
+    public Vector3 midPoint;
 
     public List<Actor> totalActors;
 
@@ -16,6 +17,8 @@ public class GameplayManager : MonoBehaviour
 
     public bool NoRuleGame;
     public bool DislikeGame;
+    public bool WinRule;
+    public WinRule winRule;
 
     [Header("Time Game Parameters")]
     public bool TimeGame;
@@ -26,11 +29,7 @@ public class GameplayManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-    }
-
-    public void MoveRaft()
-    {
-        Raft.Instance.OnRight = !Raft.Instance.OnRight;
+        midPoint = (raftLeftPos + raftRightPos) / 2;
     }
 
     public void SetPosition(bool onLeft, Actor actor)
@@ -55,7 +54,15 @@ public class GameplayManager : MonoBehaviour
             if (!actorsOnRight.Contains(actor))
                 actorsOnRight.Add(actor);
 
-            if(actorsOnRight.Count==totalActors.Count)
+            if(actorsOnRight.Count==totalActors.Count && !WinRule)
+            {
+                UIManager.Instance.ActivateSuccessPanel();
+            }
+        }
+
+        if (WinRule)
+        {
+            if (winRule.CheckForWin())
             {
                 UIManager.Instance.ActivateSuccessPanel();
             }

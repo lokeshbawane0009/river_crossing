@@ -1,0 +1,21 @@
+
+Text color : 6b5b79
+scroll bar point : 
+
+Hint
+-----------
+Tittle : ff9920
+
+
+Instruction
+-------------------
+Tittle : ff9920
+
+Text : 6b5b79
+
+
+Complete
+------------------
+bg clr : 1e0a2f / alpha : 80%
+
+Multiply value : stroke : 000000 / alpha : 60%
