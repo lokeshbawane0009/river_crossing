@@ -14,7 +14,7 @@ public class Raft : MonoBehaviour
     public RaftPath path;
     public List<Transform> inRaftPositions;
     List<Transform> emptyPositions = new List<Transform>();
-    public List<GameObject> drownFX; 
+    public List<GameObject> drownFX;
 
     //Must be equal to count of totalPassengers
     public List<Transform> rightIslandPositions;
@@ -64,14 +64,16 @@ public class Raft : MonoBehaviour
                 {
                     transform.DOLocalMove(GameplayManager.instance.raftRightPos, 1f).OnComplete(() =>
                     {
-                        clonePassengers.ForEach(x => x.OnRaft = false);
+                        clonePassengers.ForEach(x => x.OnLeft = false);
+                        UpdateCanSteer();
                     });
                 }
                 else
                 {
                     transform.DOLocalMove(GameplayManager.instance.raftLeftPos, 1f).OnComplete(() =>
                     {
-                        clonePassengers.ForEach(x => x.OnRaft = false);
+                        clonePassengers.ForEach(x => x.OnLeft = true);
+                        UpdateCanSteer();
                     });
                 }
             }
@@ -85,7 +87,7 @@ public class Raft : MonoBehaviour
                 });
             }
 
-         
+
 
             if (!GameplayManager.instance.TimeGame)
                 StartCoroutine(StartCheckingIsland());
@@ -155,6 +157,7 @@ public class Raft : MonoBehaviour
         CurrentCost += actor.cost;
         passengers.Add(actor);
 
+        /* Old Implement
         //actor.transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack)
         //    .OnComplete(() =>
         //    {
@@ -166,9 +169,13 @@ public class Raft : MonoBehaviour
         //            UpdateCanSteer();
         //        });
         //    });
+        */
 
-        actor.transform.DOMove(pos.position, 1f).SetEase(curve)
-             .OnStart(() => {
+        if (!actor.inanimated)
+        {
+            actor.transform.DOMove(pos.position, .75f).SetEase(curve)
+             .OnStart(() =>
+             {
                  if (actor.TryGetComponent<Animator>(out Animator anim))
                      anim.SetTrigger("Jump");
              })
@@ -179,12 +186,31 @@ public class Raft : MonoBehaviour
                 transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
 
                 Vector3 shakeRot = orgRot;
-                shakeRot.x = (pos == inRaftPositions[0])? -7f : 7f;
+                shakeRot.x = (pos == inRaftPositions[0]) ? -7f : 7f;
                 transform.DORotate(shakeRot, 0.5f).OnComplete(() => transform.DORotate(orgRot, 0.5f)).SetDelay(0.25f);
 
                 actor.EnableCollider();
                 UpdateCanSteer();
             });
+        }
+        else
+        {
+            actor.transform.DOJump(pos.position, 1, 1, 0.75f).SetEase(curve)
+            .OnComplete(() =>
+            {
+                actor.transform.position = pos.position;
+                actor.transform.parent = transform;
+                transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
+
+                Vector3 shakeRot = orgRot;
+                shakeRot.x = (pos == inRaftPositions[0]) ? -7f : 7f;
+                transform.DORotate(shakeRot, 0.5f).OnComplete(() => transform.DORotate(orgRot, 0.5f)).SetDelay(0.25f);
+
+                actor.EnableCollider();
+                UpdateCanSteer();
+            });
+        }
+
 
         posCounter++;
 
@@ -218,6 +244,7 @@ public class Raft : MonoBehaviour
             alternateRot = new Vector3(0, 180, 0);
         }
 
+        /*Old Implement
         //actor.transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack)
         //    .OnComplete(() =>
         //    {
@@ -232,43 +259,65 @@ public class Raft : MonoBehaviour
         //            CheckEmptyPositions();
         //        });
         //    });
+        */
 
         //Check facing direction
         float jumpTime = 0;
         if (!alternateRot.Equals(actor.transform.eulerAngles))
             jumpTime = 1;
 
-        actor.transform.DORotate(alternateRot, jumpTime).OnStart(() => {
-            if(actor.TryGetComponent<Animator>(out Animator anim))
-                anim.SetTrigger("Turn");
-        })
-        .OnComplete(() =>
+        if (!actor.inanimated)
         {
-            actor.transform.DOMove(finalPos, 1f).SetEase(curve)
-            .OnStart(() => {
-
-                actor.transform.parent = actor.originalParent;
-
-                if (actor.TryGetComponent<Animator>(out Animator anim))
-                    anim.SetTrigger("Jump");
-
-                transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
-            })
-            .OnComplete(() =>
+            actor.transform.DORotate(alternateRot, jumpTime)
+            .OnStart(() =>
             {
-                actor.transform.position = finalPos;
-                actor.transform.DORotate(finalRot, 1f)
-                .OnStart(() => {
-                    if (actor.TryGetComponent<Animator>(out Animator anim))
-                        anim.SetTrigger("Turn");
-                })
-                .OnComplete(() => {
+                if (actor.TryGetComponent<Animator>(out Animator anim))
+                    anim.SetTrigger("Turn");
+            })
+           .OnComplete(() =>
+           {
+               actor.transform.DOMove(finalPos, 0.75f).SetEase(curve)
+               .OnStart(() =>
+               {
+
+                   actor.transform.parent = actor.originalParent;
+
+                   if (actor.TryGetComponent<Animator>(out Animator anim))
+                       anim.SetTrigger("Jump");
+
+                   transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
+               })
+               .OnComplete(() =>
+               {
+                   actor.transform.position = finalPos;
+                   actor.transform.DORotate(finalRot, 1f)
+                   .OnStart(() =>
+                   {
+                       if (actor.TryGetComponent<Animator>(out Animator anim))
+                           anim.SetTrigger("Turn");
+                   })
+                   .OnComplete(() =>
+                   {
+                       actor.EnableCollider();
+                       UpdateEmptyPositions();
+                   });
+
+               });
+           });
+        }
+        else
+        {
+            actor.transform.DOJump(finalPos,1,1, 0.75f).SetEase(curve)
+               .OnStart(() => actor.transform.parent = actor.originalParent)
+               .OnComplete(() =>
+               {
+                   actor.transform.position = finalPos;
                     actor.EnableCollider();
                     UpdateEmptyPositions();
-                });
-                
-            });
-        });
+               });
+        }
+
+
 
         if (actor == steeringActor)
             steeringActor = null;

@@ -49,7 +49,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        LevelManager.Level= overrideLevel.ToString().Equals("")?PlayerPrefs.GetInt("RC_level", 0):int.Parse(overrideLevel);
+        int level = overrideLevel.ToString().Equals("") ? PlayerPrefs.GetInt("RC_level", 0) : int.Parse(overrideLevel);
+        StartCoroutine(LevelManager.FirstLoad(level));
         Coins = PlayerPrefs.GetInt("RC_coins", 0);
         MovesCount = 0;
     }

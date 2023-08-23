@@ -15,6 +15,7 @@ public class Actor : MonoBehaviour
     new Collider collider;
     public UnityEvent failEvent;
     public UnityEvent panicEvent;
+    public bool inanimated;
 
     public bool OnRaft
     {
@@ -59,6 +60,8 @@ public class Actor : MonoBehaviour
         originalParent = transform.parent;
         collider = GetComponent<Collider>();
         OnLeft = SetOnLeft;
+
+        GetComponent<Animator>().Play("Idle", -1, Random.Range(0.0f, 1.0f));
     }
 
     public void EnableCollider()
@@ -70,6 +73,7 @@ public class Actor : MonoBehaviour
     {
         canSteer = ruleObject.canSteer;
         cost = ruleObject.cost;
+        inanimated = ruleObject.inanimated;
     }
 
     private void OnMouseDown()

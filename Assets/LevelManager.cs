@@ -1,4 +1,5 @@
 using EasyTransition;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,7 @@ public class LevelManager : MonoBehaviour
     public List<GameObject> levels;
     public TransitionSettings transitionSettings;
     public float delay;
+    public GameObject fadeObject;
 
     public int Level
     {
@@ -22,12 +24,13 @@ public class LevelManager : MonoBehaviour
 
     public void TransitionLevel(int level)
     {
-        TransitionManager.Instance().onTransitionCutPointReached += SetCorrectLevelData;
+        TransitionManager.Instance().onTransitionCutPointReached += SetCurrentLevelData;
         TransitionManager.Instance().Transition(transitionSettings, delay);
     }
 
-    public void SetCorrectLevelData()
+    public void SetCurrentLevelData()
     {
+        GameManager.instance.MovesCount = 0;
         UIManager.Instance.SetLevelTxt(Level);
         for (int i = 0; i < levels.Count; i++)
         {
@@ -37,17 +40,33 @@ public class LevelManager : MonoBehaviour
                 levels[i].SetActive(false);
         }
 
-        TransitionManager.Instance().onTransitionCutPointReached -= SetCorrectLevelData;
+        TransitionManager.Instance().onTransitionCutPointReached -= SetCurrentLevelData;
     }
 
     public void RestartLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);       
+        TransitionManager.Instance().Transition(SceneManager.GetActiveScene().buildIndex,transitionSettings, delay);
     }
 
     public void LoadNextLevel()
     {
         Level++;
         PlayerPrefs.SetInt("RC_level", Level);
+    }
+
+    public IEnumerator FirstLoad(int index)
+    {
+        level = index;
+        GameManager.instance.MovesCount = 0;
+        UIManager.Instance.SetLevelTxt(Level);
+        for (int i = 0; i < levels.Count; i++)
+        {
+            if (i == level)
+                levels[i].SetActive(true);
+            else
+                levels[i].SetActive(false);
+        }
+        yield return new WaitForSeconds(1);
+        fadeObject.SetActive(false);
     }
 }

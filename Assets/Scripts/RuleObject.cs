@@ -5,4 +5,5 @@ public class RuleObject : ScriptableObject
 {
     public bool canSteer;
     public int cost;
+    public bool inanimated;
 }
