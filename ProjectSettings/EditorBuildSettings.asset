@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/FuncellSDK.unity
+    guid: 4f7fb4dd5862dc543a796cc3bbdb604e
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 7bf0bb048b4e30f4dbd65554612e356a
+  - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 1e98c552ef27d034eb5a377f703562a2
   m_configObjects: {}

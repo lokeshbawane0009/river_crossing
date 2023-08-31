@@ -2,17 +2,16 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 8
+  serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Atlas_MAT
   m_Shader: {fileID: 4800000, guid: bcda9a4af3b5d8246a2910cff3e5af44, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -60,7 +59,6 @@ Material:
         m_Texture: {fileID: 2800000, guid: fbaef2a278f0e5d42b1e36424f94ce42, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Ints: []
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -86,4 +84,3 @@ Material:
     - _HColor: {r: 0.758, g: 0.758, b: 0.758, a: 1}
     - _RimColor: {r: 0.766, g: 0.766, b: 0.766, a: 0.7607843}
     - _SColor: {r: 0.248, g: 0.248, b: 0.248, a: 1}
-  m_BuildTextureStacks: []

@@ -5,7 +5,7 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: 947582748246697039
-    second: root|Armature|mixamo.com|Layer0.001_remap
+    second: Fight
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,7 +36,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: root|Armature|mixamo.com|Layer0.001_remap
+      name: Fight
       takeName: root|Armature|mixamo.com|Layer0.001_remap
       internalID: 0
       firstFrame: 0

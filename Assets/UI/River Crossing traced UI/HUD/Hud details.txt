@@ -1,0 +1,11 @@
+HUD DETAILS
+
+Font used:-BoldenVan
+
+raft button need to streach from center
+
+*see in reference images
+
+Setings option opening from up to down 
+
+

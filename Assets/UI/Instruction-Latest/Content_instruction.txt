@@ -1,0 +1,7 @@
+Instruction
+----------------------
+Text : 6b5b79
+
+bg_name : 7c48ff
+
+Tap to continue : stroke : 6b5b79

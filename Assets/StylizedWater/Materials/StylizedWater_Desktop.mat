@@ -8,13 +8,14 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: StylizedWater_Desktop
-  m_Shader: {fileID: 4800000, guid: 4bcc0b68579a5c740ad31644411ffb54, type: 3}
+  m_Shader: {fileID: 4800000, guid: 644d4419f6d30214892dd65158332ba7, type: 3}
   m_ValidKeywords:
   - _LIGHTING_ON
-  - _SECONDARY_WAVES_ON
-  m_InvalidKeywords:
-  - _SECONDARYFOAMALWAYSVISIBLE_ON
   - _USEINTERSECTIONFOAM_ON
+  m_InvalidKeywords:
+  - _ENABLEDEPTHTEXTURE_ON
+  - _SECONDARYFOAMALWAYSVISIBLE_ON
+  - _SECONDARY_WAVES_ON
   - _WORLDSPACETILING_ON
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
@@ -75,6 +76,7 @@ Material:
     - _ENABLE_SHADOWS: 0
     - _ENABLE_VC: 0
     - _EdgeFade: 1.45
+    - _EnableDepthTexture: 1
     - _FoamDistortion: 0.45
     - _FoamOpacity: 0.04
     - _FoamSize: 0
@@ -100,7 +102,7 @@ Material:
     - _Reflection: 0
     - _ReflectionFresnel: 2.43
     - _ReflectionRefraction: 0.014
-    - _ReflectionStrength: 0.583
+    - _ReflectionStrength: 0
     - _RefractionAmount: 0.0247
     - _RimDistance: 1.91
     - _RimDistortion: 0.139

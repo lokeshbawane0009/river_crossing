@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class GameplayManager : MonoBehaviour
     public Vector3 midPoint;
 
     public List<Actor> totalActors;
+    public GameObject WinConfettiVFX;
 
     [SerializeField] List<Actor> actorsOnLeft;
     [SerializeField] List<Actor> actorsOnRight;
@@ -24,12 +26,37 @@ public class GameplayManager : MonoBehaviour
     public bool TimeGame;
     public int totalTime;
 
+    public bool isHintActivated;
+    private bool levelFailed;
+
     public Rules rules;
+    public Hints hints;
+
+    public bool LevelFailed { get => levelFailed;
+        set
+        {
+            levelFailed = value;
+        }
+    }
+
+    //public int maxThreeStarMoves, maxTwoStarMoves;
 
     private void Awake()
     {
         instance = this;
         midPoint = (raftLeftPos + raftRightPos) / 2;
+        isHintActivated = Convert.ToBoolean(PlayerPrefs.GetInt("RC_HintPlay",0));
+    }
+
+    private void Start()
+    {
+        //If HintPlay Game then we disable all colliders and player as per Hint only
+        if (isHintActivated)
+        {
+            DisableAllColliders();
+            UIManager.Instance.hintBtn.SetActive(false);
+            StartCoroutine(hints.StartSolution());
+        }
     }
 
     public void SetPosition(bool onLeft, Actor actor)
@@ -56,6 +83,7 @@ public class GameplayManager : MonoBehaviour
 
             if(actorsOnRight.Count==totalActors.Count && !WinRule)
             {
+                WinConfettiVFX.SetActive(true);
                 UIManager.Instance.ActivateSuccessPanel();
             }
         }
@@ -64,6 +92,7 @@ public class GameplayManager : MonoBehaviour
         {
             if (winRule.CheckForWin())
             {
+                WinConfettiVFX.SetActive(false);
                 UIManager.Instance.ActivateSuccessPanel();
             }
         }
@@ -261,5 +290,29 @@ public class GameplayManager : MonoBehaviour
     float FindMaxTime(float[] values)
     {
         return Mathf.Max(values);
+    }
+
+    //public float GetStarsStatus()
+    //{
+    //    int movesPlayed = GameManager.instance.MovesCount;
+    //    if ( movesPlayed <= maxThreeStarMoves)
+    //    {
+    //        float percentage=(float)movesPlayed/(float)maxThreeStarMoves;
+    //        return (2 + (1 - percentage));
+    //    }
+    //    if (movesPlayed <= maxTwoStarMoves)
+    //    {
+    //        float percentage = (float)(movesPlayed-maxThreeStarMoves) / (float)(maxTwoStarMoves- maxThreeStarMoves);
+    //        return (1 + (1-percentage));
+    //    }
+    //    return 1;
+    //}
+
+    public void DisableAllColliders()
+    {
+        foreach(Actor actor in totalActors)
+        {
+            actor.DisableCollider();
+        }
     }
 }

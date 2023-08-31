@@ -11,8 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: bcda9a4af3b5d8246a2910cff3e5af44, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_LightmapFlags: 6
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -57,7 +57,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Ramp:
-        m_Texture: {fileID: 2800000, guid: e76780aad0739d84b829b556d64b2e8a, type: 3}
+        m_Texture: {fileID: 2800000, guid: fbaef2a278f0e5d42b1e36424f94ce42, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -74,14 +74,14 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RimMax: 1
-    - _RimMin: 0.43
+    - _RimMin: 0.389
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.8867924, g: 0.78344107, b: 0.53123885, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HColor: {r: 0.75686276, g: 0.75686276, b: 0.75686276, a: 1}
     - _RimColor: {r: 0.7647059, g: 0.7647059, b: 0.7647059, a: 0.7607843}

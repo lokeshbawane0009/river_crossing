@@ -1,25 +1,28 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class Raft : MonoBehaviour
 {
     [SerializeField] Ease ease = Ease.InSine;
     [SerializeField] AnimationCurve curve;
+
     public static Raft Instance;
+
+    public AudioClip raftSail;
+
     public List<Actor> passengers;
-    public RaftPath path;
     public List<Transform> inRaftPositions;
+
     List<Transform> emptyPositions = new List<Transform>();
     public List<GameObject> drownFX;
+
+    public float jumpTime=0.5f;
 
     //Must be equal to count of totalPassengers
     public List<Transform> rightIslandPositions;
 
-    public int posCounter;
     public int maxLimit;
     public Actor steeringActor;
 
@@ -48,6 +51,29 @@ public class Raft : MonoBehaviour
             List<Actor> clonePassengers = new List<Actor>();
             clonePassengers.AddRange(this.passengers);
 
+            /*Rotate Characters to face the raft moving direction*/
+
+            Vector3 rotationVectorforActor= Vector3.zero;
+
+            if (OnRight)
+            {
+                rotationVectorforActor = new Vector3(0, 180, 0);
+            }
+
+            clonePassengers.ForEach(x => 
+            {
+                if (x.inanimated != true)
+                {
+                    x.transform.DORotate(rotationVectorforActor, 0.5f).OnStart(() =>
+                    {
+                        if (x.TryGetComponent<Animator>(out Animator anim))
+                            anim.SetTrigger("Turn");
+                    });
+                }
+            });
+
+
+            //If timebased game check the rules
             if (GameplayManager.instance.TimeGame)
             {
                 bool isSuccess = GameplayManager.instance.CheckForRules();
@@ -56,8 +82,9 @@ public class Raft : MonoBehaviour
                     UIManager.Instance.ActivateFailPanel();
             }
 
+            //bool to check if raft is OverWeight
             bool isOverWeight = isRaftOverWeight();
-
+            AudioManager.instance.PlayOneShot(raftSail);
             if (!isOverWeight)
             {
                 if (onRight)
@@ -79,11 +106,13 @@ public class Raft : MonoBehaviour
             }
             else
             {
+                // if raft is overweight then drown the raft
+                GameplayManager.instance.LevelFailed = true;
                 transform.DOLocalMove(GameplayManager.instance.midPoint, 0.5f).SetEase(Ease.Linear).OnComplete(() =>
                 {
                     clonePassengers.ForEach(x => x.panicEvent?.Invoke());
                     drownFX.ForEach(x => x.SetActive(true));
-                    transform.DOLocalMoveY(transform.position.y - 5f, 30f).SetEase(Ease.Linear);
+                    transform.DOLocalMoveY(transform.position.y - 5f, 20f).SetEase(Ease.Linear);
                 });
             }
 
@@ -94,12 +123,23 @@ public class Raft : MonoBehaviour
         }
     }
 
-    public int CurrentCost { get => currentCost; set => currentCost = value; }
+    public int CurrentCost 
+    { 
+        get => currentCost;
+        set
+        {
+            currentCost = value;
+            UIManager.Instance.SetWeights(value, maxLimit);
+        }
+    }
     public bool CanSteer
     {
         get => canSteer; set
         {
             canSteer = value;
+
+            if (GameplayManager.instance.isHintActivated)
+                return;
 
             if (canSteer)
             {
@@ -123,6 +163,7 @@ public class Raft : MonoBehaviour
         emptyPositions.AddRange(inRaftPositions);
         orgRot = transform.eulerAngles;
         originalYHeight = transform.position.y;
+        CurrentCost = 0;
         CanSteer = false;
     }
 
@@ -131,6 +172,9 @@ public class Raft : MonoBehaviour
         /*
         if (CurrentCost + actor.cost > maxLimit)
             return false;*/
+
+        //Kill any tween running on actor
+        DOTween.Kill(actor.transform);
 
         //Only incase of Dislike Game
         if (GameplayManager.instance.DislikeGame)
@@ -154,6 +198,8 @@ public class Raft : MonoBehaviour
         if (pos == null)
             return false;
 
+        actor.inRaftPosition = pos;
+
         CurrentCost += actor.cost;
         passengers.Add(actor);
 
@@ -173,7 +219,7 @@ public class Raft : MonoBehaviour
 
         if (!actor.inanimated)
         {
-            actor.transform.DOMove(pos.position, .75f).SetEase(curve)
+            actor.transform.DOMove(pos.position, jumpTime).SetEase(curve)
              .OnStart(() =>
              {
                  if (actor.TryGetComponent<Animator>(out Animator anim))
@@ -181,38 +227,17 @@ public class Raft : MonoBehaviour
              })
             .OnComplete(() =>
             {
-                actor.transform.position = pos.position;
-                actor.transform.parent = transform;
-                transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
-
-                Vector3 shakeRot = orgRot;
-                shakeRot.x = (pos == inRaftPositions[0]) ? -7f : 7f;
-                transform.DORotate(shakeRot, 0.5f).OnComplete(() => transform.DORotate(orgRot, 0.5f)).SetDelay(0.25f);
-
-                actor.EnableCollider();
-                UpdateCanSteer();
+                OnRaftCompleteCallback(actor, pos);
             });
         }
         else
         {
-            actor.transform.DOJump(pos.position, 1, 1, 0.75f).SetEase(curve)
+            actor.transform.DOJump(pos.position, 1, 1, jumpTime).SetEase(curve)
             .OnComplete(() =>
             {
-                actor.transform.position = pos.position;
-                actor.transform.parent = transform;
-                transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
-
-                Vector3 shakeRot = orgRot;
-                shakeRot.x = (pos == inRaftPositions[0]) ? -7f : 7f;
-                transform.DORotate(shakeRot, 0.5f).OnComplete(() => transform.DORotate(orgRot, 0.5f)).SetDelay(0.25f);
-
-                actor.EnableCollider();
-                UpdateCanSteer();
+                OnRaftCompleteCallback(actor, pos);
             });
         }
-
-
-        posCounter++;
 
         if (steeringActor == null && actor.canSteer)
             steeringActor = actor;
@@ -220,11 +245,33 @@ public class Raft : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Add actor on Raft CallBack
+    /// </summary>
+    /// <param name="actor">Actor which is going on Raft</param>
+    /// <param name="pos">Position of jump</param>
+    //Add Actor on Raft Callback
+    public void OnRaftCompleteCallback(Actor actor,Transform pos)
+    {
+        actor.transform.position = pos.position;
+        actor.transform.parent = transform;
+        transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
+        AudioManager.instance.RaftLandingFx();
+        Vector3 shakeRot = orgRot;
+        shakeRot.x = (pos == inRaftPositions[0]) ? -7f : 7f;
+        transform.DORotate(shakeRot, 0.5f).OnComplete(() => transform.DORotate(orgRot, 0.5f)).SetDelay(0.25f);
+
+        if (!GameplayManager.instance.isHintActivated)
+            actor.EnableCollider();
+
+        UpdateCanSteer();
+    }
+
     public void RemovePassenger(Actor actor)
     {
         CurrentCost -= actor.cost;
         passengers.Remove(actor);
-        posCounter--;
+
         Vector3 finalPos = Vector3.zero;
         Vector3 finalRot = Vector3.zero;
         Vector3 alternateRot = Vector3.zero;
@@ -262,13 +309,16 @@ public class Raft : MonoBehaviour
         */
 
         //Check facing direction
-        float jumpTime = 0;
+        float rotationTime = 0;
         if (!alternateRot.Equals(actor.transform.eulerAngles))
-            jumpTime = 1;
+            rotationTime = 0.3f;
+
+        UpdateEmptyPositions(actor.inRaftPosition);
+        actor.inRaftPosition = null;
 
         if (!actor.inanimated)
         {
-            actor.transform.DORotate(alternateRot, jumpTime)
+            actor.transform.DORotate(alternateRot, rotationTime)
             .OnStart(() =>
             {
                 if (actor.TryGetComponent<Animator>(out Animator anim))
@@ -276,7 +326,7 @@ public class Raft : MonoBehaviour
             })
            .OnComplete(() =>
            {
-               actor.transform.DOMove(finalPos, 0.75f).SetEase(curve)
+               actor.transform.DOMove(finalPos, jumpTime).SetEase(curve)
                .OnStart(() =>
                {
 
@@ -298,26 +348,24 @@ public class Raft : MonoBehaviour
                    })
                    .OnComplete(() =>
                    {
-                       actor.EnableCollider();
-                       UpdateEmptyPositions();
+                       if(!GameplayManager.instance.isHintActivated)
+                        actor.EnableCollider();
                    });
-
                });
            });
         }
         else
         {
-            actor.transform.DOJump(finalPos,1,1, 0.75f).SetEase(curve)
+            actor.transform.DOJump(finalPos,1,1, jumpTime).SetEase(curve)
                .OnStart(() => actor.transform.parent = actor.originalParent)
                .OnComplete(() =>
                {
                    actor.transform.position = finalPos;
-                    actor.EnableCollider();
-                    UpdateEmptyPositions();
+
+                   if (!GameplayManager.instance.isHintActivated)
+                       actor.EnableCollider();
                });
         }
-
-
 
         if (actor == steeringActor)
             steeringActor = null;
@@ -327,11 +375,11 @@ public class Raft : MonoBehaviour
 
     IEnumerator StartCheckingIsland()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1.2f);
         bool isSuccess = GameplayManager.instance.CheckForRules();
-
-        if (!isSuccess)
-            UIManager.Instance.ActivateFailPanel();
+        
+        if(!isSuccess)
+            GameplayManager.instance.LevelFailed=true;
     }
 
     public void UpdateCanSteer()
@@ -343,34 +391,18 @@ public class Raft : MonoBehaviour
             CanSteer = true;
     }
 
-    void UpdateEmptyPositions()
+    void UpdateEmptyPositions(Transform pos)
     {
-        emptyPositions.AddRange(inRaftPositions);
-        emptyPositions = emptyPositions.Distinct().ToList();
-
-        for (int i = 0; i < emptyPositions.Count; i++)
-        {
-            var colliders = Physics.CheckSphere(emptyPositions[i].position, 0.1f);
-
-            if (colliders)
-            {
-                emptyPositions.Remove(emptyPositions[i]);
-            }
-        }
+        emptyPositions.Add(pos);
     }
 
     Transform FindEmptyPosition()
     {
-        for (int i = 0; i < emptyPositions.Count; i++)
+        if (emptyPositions.Count > 0)
         {
-            var colliders = Physics.CheckSphere(emptyPositions[i].position, 0.1f);
-
-            if (!colliders)
-            {
-                var emptyPos = emptyPositions[i].transform;
-                emptyPositions.Remove(emptyPositions[i]);
-                return emptyPos;
-            }
+            Transform pos = emptyPositions[0];
+            emptyPositions.Remove(pos);
+            return pos;
         }
         return null;
     }

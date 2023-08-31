@@ -1,0 +1,7 @@
+HUD
+--------------
+Level : stroke : 000000 / alpha : 30%
+
+probar_color : ffcd20
+
+weight color : ee6d42 /stroke : ffffff

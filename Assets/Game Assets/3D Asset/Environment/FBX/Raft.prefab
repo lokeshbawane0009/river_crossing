@@ -83,8 +83,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  raftSail: {fileID: 8300000, guid: 430adc09f80590041841e855e52322d9, type: 3}
   passengers: []
-  path: {fileID: 0}
   inRaftPositions:
   - {fileID: 4045625435221410312}
   - {fileID: 4045625435884074083}
@@ -93,12 +93,12 @@ MonoBehaviour:
   - {fileID: 6332138889375447999}
   - {fileID: 5732467726761955363}
   - {fileID: 3802070245389485467}
+  jumpTime: 0.5
   rightIslandPositions:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  posCounter: 0
   maxLimit: 2
   steeringActor: {fileID: 0}
   currentCost: 0

@@ -1,0 +1,3 @@
+Level Selection
+-------------------------
+Lvl_Text : 06af30 / stroke : ffffff

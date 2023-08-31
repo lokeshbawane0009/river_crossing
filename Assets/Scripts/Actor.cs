@@ -1,3 +1,4 @@
+using MoreMountains.NiceVibrations;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -14,8 +15,10 @@ public class Actor : MonoBehaviour
     [HideInInspector] public Transform originalParent;
     new Collider collider;
     public UnityEvent failEvent;
+
     public UnityEvent panicEvent;
     public bool inanimated;
+    public Transform inRaftPosition;
 
     public bool OnRaft
     {
@@ -51,22 +54,34 @@ public class Actor : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        collider = GetComponent<Collider>();
+    }
+
     private void Start()
     {
         //If on left we can set the position , otherwise use the position set in inspector
-        if(SetOnLeft)
+        if (SetOnLeft)
             originalPos = transform.position;
         
         originalParent = transform.parent;
-        collider = GetComponent<Collider>();
+        
         OnLeft = SetOnLeft;
 
-        GetComponent<Animator>().Play("Idle", -1, Random.Range(0.0f, 1.0f));
+        if(TryGetComponent<Animator>(out Animator animator))
+            animator.Play("Idle", -1, Random.Range(0.0f, 1.0f));
+
     }
 
     public void EnableCollider()
     {
         collider.enabled = true;
+    }
+
+    public void DisableCollider()
+    {
+        collider.enabled = false;
     }
 
     private void OnValidate()
@@ -78,11 +93,13 @@ public class Actor : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (EventSystem.current.IsPointerOverGameObject() || DialoguePanel.instructionPlaying || GameplayManager.instance.LevelFailed)
             return;
 
         if (Raft.Instance.OnRight == OnLeft)
             return;
+
+        MMVibrationManager.Haptic(HapticTypes.Selection);
 
         OnRaft = !OnRaft;
 

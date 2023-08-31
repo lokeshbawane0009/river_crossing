@@ -1,0 +1,5 @@
+
+
+tint color is used with 80% opacity (less 20%)_1e0a2f for all screens
+
+*see in reference image
