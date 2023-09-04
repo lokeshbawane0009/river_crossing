@@ -20,6 +20,7 @@ public class Tutorial : MonoBehaviour
 
     public void StartTutorial()
     {
+        GameplayManager.instance.isHintActivated = true;
         StartCoroutine(hints.StartSolution());
     }
 }

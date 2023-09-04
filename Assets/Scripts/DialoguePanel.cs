@@ -133,6 +133,9 @@ public class DialoguePanel : MonoBehaviour
             Tutorial.Instance.StartTutorial();
         }
 
+        if (PlayerPrefs.GetInt("RC_LevelFail", 0) == 1)
+            UIManager.Instance.ToggleInstructionBtn(true);
+
     }
 
     public static string GetString(string str)

@@ -95,7 +95,6 @@ public class Hints : MonoBehaviour
 
             hintSteps.RemoveAt(0);
         }
-
         PlayerPrefs.SetInt("RC_HintPlay", 0);
     }
 

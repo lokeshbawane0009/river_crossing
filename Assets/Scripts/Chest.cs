@@ -25,6 +25,8 @@ public class Chest : MonoBehaviour
         thief.transform.DOLookAt(transform.position, 0.2f, AxisConstraint.Y);
         thief.transform.DOMove(transform.position, 3f).SetEase(Ease.Linear)
             .OnStart(() => {
+                ZoomCamera.Instance.Target = transform;
+                ZoomCamera.Instance.EnableCamera();
                 thief.GetComponent<Animator>().SetBool("Run", true);
             }).OnComplete(() => {
                 transform.DOJump(chestOnthief.transform.position, 1, 1, 0.2f).OnStart(() =>
@@ -36,6 +38,8 @@ public class Chest : MonoBehaviour
                 }).OnComplete(() => {
                     thief.transform.DOLookAt(startPos, 0.2f, AxisConstraint.Y).OnComplete(() =>
                     {
+                        ZoomCamera.Instance.Target = null;
+                        ZoomCamera.Instance.DisableCamera();
                         thief.transform.DOMove(startPos, 3f).SetEase(Ease.Linear);
                         thief.GetComponent<Animator>().SetBool("RunWithChest", true);
 

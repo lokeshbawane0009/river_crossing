@@ -35,7 +35,7 @@ public class Lion : MonoBehaviour
     IEnumerator ShowFailScreen()
     {
         UIManager.Instance.SetFailText(failText);
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(3.5f);
         UIManager.Instance.ActivateFailPanel();
     }
 

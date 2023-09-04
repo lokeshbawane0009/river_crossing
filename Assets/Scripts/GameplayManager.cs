@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -27,15 +28,15 @@ public class GameplayManager : MonoBehaviour
     public int totalTime;
 
     public bool isHintActivated;
-    private bool levelFailed;
+    private bool gameSet;
 
     public Rules rules;
     public Hints hints;
 
-    public bool LevelFailed { get => levelFailed;
+    public bool GameSet { get => gameSet;
         set
         {
-            levelFailed = value;
+            gameSet = value;
         }
     }
 
@@ -61,6 +62,7 @@ public class GameplayManager : MonoBehaviour
 
     public void SetPosition(bool onLeft, Actor actor)
     {
+        
         if (onLeft)
         {
             if (actorsOnRight.Contains(actor))
@@ -81,10 +83,12 @@ public class GameplayManager : MonoBehaviour
             if (!actorsOnRight.Contains(actor))
                 actorsOnRight.Add(actor);
 
-            if(actorsOnRight.Count==totalActors.Count && !WinRule)
+            if (GameSet)
+                return;
+
+            if (actorsOnRight.Count==totalActors.Count && !WinRule)
             {
-                WinConfettiVFX.SetActive(true);
-                UIManager.Instance.ActivateSuccessPanel();
+                StartCoroutine(WinCall());
             }
         }
 
@@ -92,11 +96,23 @@ public class GameplayManager : MonoBehaviour
         {
             if (winRule.CheckForWin())
             {
-                WinConfettiVFX.SetActive(false);
-                UIManager.Instance.ActivateSuccessPanel();
+                StartCoroutine(WinCall());
             }
         }
     }
+
+    IEnumerator WinCall()
+    {
+        GameSet = true;
+        var clone = new List<Actor>();
+        clone.AddRange(Raft.Instance.passengers);
+        clone.ForEach(x => Raft.Instance.RemovePassenger(x));
+        yield return new WaitForSeconds(1.1f);
+        WinConfettiVFX.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        UIManager.Instance.ActivateSuccessPanel();
+    }
+
 
     public bool CheckForRules()
     {

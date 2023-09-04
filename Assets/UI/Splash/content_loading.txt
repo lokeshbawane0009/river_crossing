@@ -1,0 +1,5 @@
+Loading
+----------------
+bg color : fcc279
+
+loading text : 6b5b79 . stroke : ffffff

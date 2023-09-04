@@ -8,12 +8,14 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] Transform LevelSelectiionPanel;
     public List<LevelData> levelDatas;
+    public int maxLevel;
     public TransitionSettings transitionSettings;
 
     private void Start()
     {
         Application.targetFrameRate = 60;
         int unlockedLevel = PlayerPrefs.GetInt("RC_UnlockedLevel",0);
+        unlockedLevel = Mathf.Clamp(unlockedLevel,0, maxLevel);
         for(int i = 0; i <= unlockedLevel; i++)
         {
             levelDatas[i].Unlocked = true;

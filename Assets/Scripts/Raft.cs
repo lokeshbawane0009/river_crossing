@@ -107,7 +107,7 @@ public class Raft : MonoBehaviour
             else
             {
                 // if raft is overweight then drown the raft
-                GameplayManager.instance.LevelFailed = true;
+                GameplayManager.instance.GameSet = true;
                 transform.DOLocalMove(GameplayManager.instance.midPoint, 0.5f).SetEase(Ease.Linear).OnComplete(() =>
                 {
                     clonePassengers.ForEach(x => x.panicEvent?.Invoke());
@@ -151,6 +151,8 @@ public class Raft : MonoBehaviour
             }
         }
     }
+
+   
 
     private void Awake()
     {
@@ -379,7 +381,7 @@ public class Raft : MonoBehaviour
         bool isSuccess = GameplayManager.instance.CheckForRules();
         
         if(!isSuccess)
-            GameplayManager.instance.LevelFailed=true;
+            GameplayManager.instance.GameSet=true;
     }
 
     public void UpdateCanSteer()

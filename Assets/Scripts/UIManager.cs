@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Cinemachine.DocumentationSortingAttribute;
 
 public class UIManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI levelNoTxt, levelNoTxtInFail, levelNoTxtInWin;
     [SerializeField] TextMeshProUGUI coinsTxt;
     [SerializeField] TextMeshProUGUI failTxt;
+    public GameObject finalLevelPanel;
     public GameObject failPanel;
     public GameObject succesPanel;
     public GameObject gameplayPanel;
@@ -75,13 +77,7 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        if (GameManager.instance.GetLevelIndex() == 6)
-        {
-            levelSlider.gameObject.SetActive(true);
-        }
-
-        if(PlayerPrefs.GetInt("RC_LevelFail", 0)==1)
-            ToggleInstructionBtn(true);
+        
     }
 
     public void SetWeights(int value,int maxLimit)
@@ -109,13 +105,23 @@ public class UIManager : MonoBehaviour
         gameplayPanel.SetActive(false);
     }
 
+    public void FinalLevelScreen()
+    {
+        gameplayPanel.SetActive(false);
+        failPanel?.SetActive(false);
+        succesPanel?.SetActive(false);
+        finalLevelPanel.SetActive(true);
+    }
+
     public void ActivateSuccessPanel()
     {
         AudioManager.instance.WinFx();
         PlayerPrefs.SetInt("RC_LevelFail", 0);
+        ToggleInstructionBtn(false);
         MMVibrationManager.Haptic(HapticTypes.Success);
         gameplayPanel.SetActive(false);
         succesPanel.SetActive(true);
+        GameManager.instance.UpdateUnlockLevel();
         CustomGAEvents.LevelCompleted(GameManager.instance.GetLevelIndex());
         CustomGAEvents.LevelCompletedWithMoves(GameManager.instance.GetLevelIndex(),GameManager.instance.MovesCount);
     }
@@ -165,6 +171,12 @@ public class UIManager : MonoBehaviour
                 newImageInstruction.Sprite = current.assocaitedImage;
                 newImageInstruction.IsWrong = current.wrongTick;
             }
+        }
+
+        // Enable Slider
+        if (GameManager.instance.GetLevelIndex() == 6)
+        {
+            levelSlider.gameObject.SetActive(true);
         }
     }
 
@@ -248,6 +260,7 @@ public class UIManager : MonoBehaviour
 
     public void ToggleInstructionBtn(bool on)
     {
+        MMVibrationManager.Haptic(HapticTypes.Selection);
         if (on)
         {
             hand.SetActive(true);
@@ -256,6 +269,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
+            PlayerPrefs.SetInt("RC_LevelFail", 0);
             DOTween.Kill(hand.transform);
             hand.SetActive(false);
         }

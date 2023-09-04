@@ -1,4 +1,5 @@
 using MoreMountains.NiceVibrations;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -93,7 +94,7 @@ public class Actor : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (EventSystem.current.IsPointerOverGameObject() || DialoguePanel.instructionPlaying || GameplayManager.instance.LevelFailed)
+        if (IsPointerOverUIObject() || DialoguePanel.instructionPlaying || GameplayManager.instance.GameSet)
             return;
 
         if (Raft.Instance.OnRight == OnLeft)
@@ -108,5 +109,14 @@ public class Actor : MonoBehaviour
         //        .SetEase(Ease.InOutBack)
         //        .OnComplete(() => transform.localScale = Vector3.one)
         //        .SetId(transform.GetInstanceID());
+    }
+
+    private bool IsPointerOverUIObject()
+    {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
     }
 }

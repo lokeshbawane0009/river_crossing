@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static Cinemachine.DocumentationSortingAttribute;
 
 public class LevelManager : MonoBehaviour
 {
@@ -24,6 +25,14 @@ public class LevelManager : MonoBehaviour
         set
         {
             level = value;
+
+            if (level > levels.Count - 1)
+            {
+                level=levels.Count - 1;
+                GameManager.instance.FinalLevelScreen();
+                return;
+            }
+
             TransitionLevel(level);
         }
     }
@@ -64,11 +73,6 @@ public class LevelManager : MonoBehaviour
     public void LoadNextLevel()
     {
         Level++;
-        totalLevelUnlocked = PlayerPrefs.GetInt("RC_UnlockedLevel", 0);
-        if (Level > totalLevelUnlocked)
-        {
-            PlayerPrefs.SetInt("RC_UnlockedLevel", Level);
-        }
         PlayerPrefs.SetInt("RC_level", Level);
     }
 
@@ -84,6 +88,11 @@ public class LevelManager : MonoBehaviour
                 levels[i].SetActive(true);
             else
                 levels[i].SetActive(false);
+        }
+        if (level > levels.Count - 1)
+        {
+            level = levels.Count - 1;
+            GameManager.instance.FinalLevelScreen();
         }
         yield return new WaitForSeconds(1);
         fadeObject.SetActive(false);

@@ -26,7 +26,7 @@ public class Human : MonoBehaviour
         ZoomCamera.Instance.Target = transform;
         ZoomCamera.Instance.EnableCamera();
         UIManager.Instance.SetFailText(failText);
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(3f);
         UIManager.Instance.ActivateFailPanel();
     }
 }

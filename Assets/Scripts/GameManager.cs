@@ -1,4 +1,5 @@
 using MoreMountains.NiceVibrations;
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -39,7 +40,7 @@ public class GameManager : MonoBehaviour
     //Assigned on Canvas->GameplayUI->MoveBtn
     public void MoveRaft()
     {
-        if (GameplayManager.instance.LevelFailed)
+        if (GameplayManager.instance.GameSet)
             return;
 
         Raft.Instance.OnRight = !Raft.Instance.OnRight;
@@ -51,10 +52,20 @@ public class GameManager : MonoBehaviour
         //UIManager.Instance.SetSlider(status);
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+            MoveRaft();
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+            LoadNextLevel();
+    }
+
     private void Awake()
     {
         instance = this;
         Application.targetFrameRate = 60;
+        Input.multiTouchEnabled = false;
     }
 
     private void Start()
@@ -85,6 +96,16 @@ public class GameManager : MonoBehaviour
         LevelManager.LoadNextLevel();
     }
 
+    public void UpdateUnlockLevel()
+    {
+        var totalLevelUnlocked = PlayerPrefs.GetInt("RC_UnlockedLevel", 0);
+        var currentLevel = LevelManager.Level+1;
+        if (currentLevel > totalLevelUnlocked)
+        {
+            PlayerPrefs.SetInt("RC_UnlockedLevel", currentLevel);
+        }
+    }
+
     public int GetLevelIndex()
     {
         return (LevelManager.Level + 1);
@@ -101,6 +122,11 @@ public class GameManager : MonoBehaviour
     public void GetSpecialReward()
     {
         Coins += specialRewardValue;
+    }
+
+    internal void FinalLevelScreen()
+    {
+        UIManager.Instance.FinalLevelScreen();
     }
 
     #endregion

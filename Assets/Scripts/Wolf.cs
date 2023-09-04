@@ -31,7 +31,7 @@ public class Wolf : MonoBehaviour
         yield return new WaitForSeconds(0.6f);
         transform.DOLookAt(goat.position, 0.3f).OnComplete(() =>
         {
-            transform.DOMove(goat.position + (transform.position - goat.position) * 0.2f, 1.3f).SetEase(Ease.InBack).OnStart(() =>
+            transform.DOMove(goat.position + (transform.position - goat.position) * 0.2f, 0.8f).SetEase(Ease.InBack).OnStart(() =>
             {
                 AudioManager.instance.PlayOneShot(wolfFx,volume);
                 goat.GetComponent<Animator>().SetTrigger("Fail"); // Deer Animation
