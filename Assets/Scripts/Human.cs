@@ -19,6 +19,12 @@ public class Human : MonoBehaviour
         StartCoroutine(StartPanic());
     }
 
+    public void PanicOnly()
+    {
+        //anim.SetTrigger("Panic");
+        anim.Play("Panic", 0, Random.Range(0, 1f));
+    }
+
     IEnumerator StartPanic()
     {
         anim.SetTrigger("Panic");

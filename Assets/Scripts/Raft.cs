@@ -79,7 +79,11 @@ public class Raft : MonoBehaviour
                 bool isSuccess = GameplayManager.instance.CheckForRules();
 
                 if (!isSuccess)
-                    UIManager.Instance.ActivateFailPanel();
+                {
+                    GameplayManager.instance.GameSet = true;
+                    transform.DOLocalMove(GameplayManager.instance.midPoint, 5f).SetEase(Ease.Linear);
+                    return;
+                }
             }
 
             //bool to check if raft is OverWeight
@@ -164,7 +168,7 @@ public class Raft : MonoBehaviour
         steeringActor = null;
         emptyPositions.AddRange(inRaftPositions);
         orgRot = transform.eulerAngles;
-        originalYHeight = transform.position.y;
+        originalYHeight = transform.localPosition.y;
         CurrentCost = 0;
         CanSteer = false;
     }
@@ -257,7 +261,7 @@ public class Raft : MonoBehaviour
     {
         actor.transform.position = pos.position;
         actor.transform.parent = transform;
-        transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
+        transform.DOLocalMoveY(transform.localPosition.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
         AudioManager.instance.RaftLandingFx();
         Vector3 shakeRot = orgRot;
         shakeRot.x = (pos == inRaftPositions[0]) ? -7f : 7f;
@@ -337,7 +341,7 @@ public class Raft : MonoBehaviour
                    if (actor.TryGetComponent<Animator>(out Animator anim))
                        anim.SetTrigger("Jump");
 
-                   transform.DOLocalMoveY(transform.position.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
+                   transform.DOLocalMoveY(transform.localPosition.y - 0.1f, 0.5f).SetEase(Ease.InOutBack).OnComplete(() => transform.DOLocalMoveY(originalYHeight, 0.5f));
                })
                .OnComplete(() =>
                {

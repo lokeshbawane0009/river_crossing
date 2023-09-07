@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class GameplayManager : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class GameplayManager : MonoBehaviour
     [Header("Time Game Parameters")]
     public bool TimeGame;
     public int totalTime;
+    public UnityEvent consequenceEvent;
 
     public bool isHintActivated;
     private bool gameSet;
@@ -122,8 +124,8 @@ public class GameplayManager : MonoBehaviour
         if (TimeGame)
         {
             totalTime -= (int)CheckTimeToCross();
-            
-            if(totalTime<=0)
+            consequenceEvent?.Invoke();
+            if (totalTime<=0)
                 return false;
 
             return true;
